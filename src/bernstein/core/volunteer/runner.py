@@ -117,6 +117,7 @@ from urllib.parse import urlparse
 from bernstein.adapters._contract import AuthBasis
 from bernstein.core.git.worktree import WorktreeError, WorktreeManager
 from bernstein.core.integrations.tickets import fetch_ticket
+from bernstein.core.volunteer.adapter_selection import select_adapter_for_volunteer
 from bernstein.core.volunteer.claim import (
     DEFAULT_CLAIM_STALENESS,
     build_claim_body,
@@ -222,6 +223,7 @@ class ClaimedTask:
     issue_title: str
     issue_body: str
     ref: str | None = None
+    role: str = "backend"
 
 
 @dataclass(frozen=True, slots=True)
@@ -528,6 +530,13 @@ def run_claimed_task(
     auth_problem = _validate_volunteer_auth_basis(adapter_id)
     if auth_problem is not None:
         return refuse(RefusalStage.AGENT, "provider_terms_unavailable", auth_problem)
+
+    # Adapter selection: when no adapter is explicitly chosen and a certified
+    # local endpoint exists for this role, select it to minimize provider
+    # observability. The explicit choice always wins.
+    selected_adapter = select_adapter_for_volunteer(role=task.role, explicit_adapter=adapter_id)
+    if selected_adapter is not None and selected_adapter != adapter_id:
+        adapter_id = selected_adapter
 
     # --- claim etiquette: read the issue, skip a duplicate, post a claim ------
     # Best-effort and coordinator-free: a gh failure yields no state and the run
