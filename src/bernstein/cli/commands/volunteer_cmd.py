@@ -656,6 +656,7 @@ def hub_cmd(host: str, port: int, lease_store_path: str | None, allowed_origins:
     click.echo(f"Bernstein volunteer hub listening on http://{host}:{port}")
     uvicorn.run(app, host=host, port=port, log_level="warning")
 
+
 @volunteer_group.command("autopilot")
 @click.option(
     "--profile",
