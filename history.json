@@ -83,6 +83,27 @@
       "pr_merge_lag_hours_median": 3.3,
       "pr_merged_count": 1017,
       "pr_merged_within_24h_pct": 84.7
+    },
+    {
+      "commits_main_7d": 100,
+      "distinct_outside_authors": 82,
+      "generated_at": "2026-09-21",
+      "grabbable": {
+        "good_first_issue_open": 12,
+        "good_first_issue_unassigned": 10,
+        "up_for_grabs_open": 44,
+        "up_for_grabs_unassigned": 41
+      },
+      "issue_close_lag_hours_median": 28.7,
+      "issues_closed_count": 526,
+      "merged_prs_by_author_class": {
+        "automation": 245,
+        "maintainer": 439,
+        "outside": 312
+      },
+      "pr_merge_lag_hours_median": 3.3,
+      "pr_merged_count": 996,
+      "pr_merged_within_24h_pct": 85.5
     }
   ]
 }

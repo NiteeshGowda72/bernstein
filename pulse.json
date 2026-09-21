@@ -3,30 +3,30 @@
     "registered": 54,
     "selectable": 52
   },
-  "commits_main_7d": 60,
+  "commits_main_7d": 100,
   "days_since_last_commit": 0,
   "distinct_outside_authors": 82,
-  "generated_at": "2026-09-19",
+  "generated_at": "2026-09-21",
   "grabbable": {
-    "good_first_issue_open": 10,
+    "good_first_issue_open": 12,
     "good_first_issue_unassigned": 10,
-    "up_for_grabs_open": 43,
-    "up_for_grabs_unassigned": 42
+    "up_for_grabs_open": 44,
+    "up_for_grabs_unassigned": 41
   },
-  "issue_close_lag_hours_median": 29.6,
-  "issues_closed_count": 581,
+  "issue_close_lag_hours_median": 28.7,
+  "issues_closed_count": 526,
   "latest_release": {
-    "date": "2026-09-10",
-    "tag": "v3.19.2"
+    "date": "2026-09-20",
+    "tag": "v3.20.0"
   },
   "merged_prs_by_author_class": {
-    "automation": 239,
-    "maintainer": 429,
-    "outside": 349
+    "automation": 245,
+    "maintainer": 439,
+    "outside": 312
   },
   "pr_merge_lag_hours_median": 3.3,
-  "pr_merged_count": 1017,
-  "pr_merged_within_24h_pct": 84.7,
+  "pr_merged_count": 996,
+  "pr_merged_within_24h_pct": 85.5,
   "readme_translations": {
     "in_sync": 23,
     "stale": 0,
