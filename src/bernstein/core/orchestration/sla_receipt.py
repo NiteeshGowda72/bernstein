@@ -541,7 +541,6 @@ def load_receipts(sdd_dir: Path) -> list[SLAViolationReceipt]:
     return out
 
 
-
 # Backward-compat aliases for callers still using the old names
 sign_receipt = sign_sla_receipt
 verify_receipt = verify_sla_receipt

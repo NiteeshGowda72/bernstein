@@ -486,7 +486,6 @@ def open_receipt(receipt_path: Path):  # type: ignore[no-untyped-def]
         yield tar
 
 
-
 # Backward-compat alias for callers still using the old name
 verify_receipt = verify_receipt_tarball
 

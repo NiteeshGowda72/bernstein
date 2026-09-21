@@ -43,11 +43,11 @@ __all__ = [
     "assemble_tag_conformance_receipt",
     "assemble_waiver_receipt",
     "canonical_admission_receipt_bytes",
-    "sign_admission_receipt",
-    "verify_admission_receipt",
     # Backward-compat aliases for old import paths
     "canonical_receipt_bytes",
+    "sign_admission_receipt",
     "sign_receipt",
+    "verify_admission_receipt",
     "verify_receipt",
 ]
 
