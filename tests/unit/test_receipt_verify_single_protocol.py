@@ -50,19 +50,16 @@ PROTOCOL_MODULE = "core/receipts/protocol.py"
 #: add one.
 PENDING_VERIFY_RECEIPT = frozenset(
     {
-        "core/orchestration/supervisor_receipt.py",
     },
 )
 
 PENDING_SIGN_RECEIPT = frozenset(
     {
-        "core/orchestration/supervisor_receipt.py",
     },
 )
 
 PENDING_CANONICAL_RECEIPT_BYTES = frozenset(
     {
-        "core/orchestration/supervisor_receipt.py",
     },
 )
 

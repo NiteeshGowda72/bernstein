@@ -45,6 +45,10 @@ __all__ = [
     "canonical_admission_receipt_bytes",
     "sign_admission_receipt",
     "verify_admission_receipt",
+    # Backward-compat aliases for old import paths
+    "canonical_receipt_bytes",
+    "sign_receipt",
+    "verify_receipt",
 ]
 
 #: Schema version embedded in every admission receipt.
@@ -54,6 +58,10 @@ RECEIPT_SCHEMA_VERSION: str = "1.0.0"
 def canonical_admission_receipt_bytes(payload: dict[str, Any]) -> bytes:
     """Return deterministic signing bytes: sorted keys, compact, UTF-8."""
     return json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+# Backward-compat alias for old import path
+canonical_receipt_bytes = canonical_admission_receipt_bytes
 
 
 def _payload_digest(payload: dict[str, Any]) -> str:
@@ -194,6 +202,10 @@ def sign_admission_receipt(receipt: WaiverReceipt | TagConformanceReceipt, *, pr
     return dataclasses.replace(receipt, signature=signature)
 
 
+# Backward-compat alias for old import path
+sign_receipt = sign_admission_receipt
+
+
 def verify_admission_receipt(
     receipt: WaiverReceipt | TagConformanceReceipt,
     *,
@@ -224,3 +236,7 @@ def verify_admission_receipt(
     if not outcome.verified:
         return False, outcome.reason
     return True, ""
+
+
+# Backward-compat alias for old import path
+verify_receipt = verify_admission_receipt
