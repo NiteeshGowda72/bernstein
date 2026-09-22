@@ -695,4 +695,6 @@ __all__ = [
     "verify_receipt_full",
     "verify_selection_receipt",
     "write_receipt",
+    "verify_receipt",
 ]
+verify_receipt = verify_selection_receipt
