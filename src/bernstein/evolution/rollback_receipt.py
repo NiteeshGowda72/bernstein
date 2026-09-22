@@ -195,9 +195,7 @@ def build_rollback_receipt(
         "status": status,
         "timestamp": timestamp,
     }
-    body_bytes = json.dumps(
-        body, ensure_ascii=False, separators=(",", ":"), sort_keys=True
-    ).encode("utf-8")
+    body_bytes = json.dumps(body, ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode("utf-8")
     receipt_hash = _hash_obj(body)
 
     spine = LineageSpine(lineage_root, run_id=EVOLUTION_ROLLBACK_RUN_ID, hmac_key=hmac_key)
@@ -331,9 +329,7 @@ def verify_rollback_receipt(
     if not report.ok:
         detail = "; ".join(report.errors) if report.errors else report.status.value
         return RollbackVerifyResult(
-            ok=False,
-            reason=f"evolution-rollback spine failed verification: {detail}",
-            receipt=receipt
+            ok=False, reason=f"evolution-rollback spine failed verification: {detail}", receipt=receipt
         )
 
     expected_content = content_hash_of(receipt.canonical_bytes())
@@ -343,9 +339,7 @@ def verify_rollback_receipt(
     )
     if not anchored:
         return RollbackVerifyResult(
-            ok=False,
-            reason="receipt is not anchored in the evolution-rollback spine",
-            receipt=receipt
+            ok=False, reason="receipt is not anchored in the evolution-rollback spine", receipt=receipt
         )
     return RollbackVerifyResult(ok=True, reason="", receipt=receipt)
 
