@@ -28,10 +28,11 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from bernstein.core.lineage.spine import LineageSpine, content_hash_of
-from bernstein.core.verify_result import VerifyResult
 from bernstein.core.persistence.atomic_write import write_atomic_text
+from bernstein.core.verify_result import VerifyResult
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -114,60 +115,84 @@ def rollback_receipt_path(workdir: Path, receipt_hash: str) -> Path:
         if parent == workdir:
             break
         _refuse_unprobeable_or_linked(parent)
-    # Final defense: ensure the resolved path is still under the workdir.
-    try:
-        base.resolve().relative_to(workdir.resolve())
-    except ValueError as exc:
-        raise ValueError(f"rollback receipt store base {base} escapes workdir {workdir}") from exc
-
-    return base.joinpath(f"{receipt_hash}.json")
+    path = base / f"{receipt_hash}.json"
+    # Final link refusal on the leaf itself.
+    _refuse_unprobeable_or_linked(path)
+    return path
 
 
 @dataclass(frozen=True)
 class RollbackReceipt:
-    """Immutable rollback receipt."""
-
     schema_version: int
-    restored_files: dict[str, str]  # relative path -> sha256:hex digest
-    canonical_bytes: bytes
-    journal_entry_hash: str
+    proposal_id: str
+    proposal_title: str
+    manifest_digest: str
+    restored_files: dict[str, str]  # target path -> sha256 content digest
+    status: str
+    timestamp: str
     receipt_hash: str
+    journal_entry_hash: str
 
-    def body(self) -> dict[str, Any]:
-        """Return the JSON-serializable body (excluding the receipt hash)."""
+    def to_dict(self) -> Mapping[str, Any]:
         return {
             "schema_version": self.schema_version,
+            "proposal_id": self.proposal_id,
+            "proposal_title": self.proposal_title,
+            "manifest_digest": self.manifest_digest,
             "restored_files": self.restored_files,
-            "canonical_bytes": self.canonical_bytes.hex(),
-            "journal_entry_hash": self.journal_entry_hash,
-        }
-
-    def to_dict(self) -> dict[str, Any]:
-        """Return a JSON-serializable dict."""
-        return {
-            "schema_version": self.schema_version,
-            "restored_files": self.restored_files,
-            "canonical_bytes": self.canonical_bytes.hex(),
-            "journal_entry_hash": self.journal_entry_hash,
+            "status": self.status,
+            "timestamp": self.timestamp,
             "receipt_hash": self.receipt_hash,
+            "journal_entry_hash": self.journal_entry_hash,
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> RollbackReceipt:
-        """Reconstruct from a dict produced by :meth:`to_dict`."""
+    def from_dict(cls, data: Mapping[str, Any]) -> RollbackReceipt:
         return cls(
-            schema_version=data["schema_version"],
-            restored_files=data["restored_files"],
-            canonical_bytes=bytes.fromhex(data["canonical_bytes"]),
-            journal_entry_hash=data["journal_entry_hash"],
-            receipt_hash=data["receipt_hash"],
+            schema_version=int(data["schema_version"]),
+            proposal_id=str(data["proposal_id"]),
+            proposal_title=str(data["proposal_title"]),
+            manifest_digest=str(data["manifest_digest"]),
+            restored_files={str(k): str(v) for k, v in data["restored_files"].items()},
+            status=str(data["status"]),
+            timestamp=str(data["timestamp"]),
+            receipt_hash=str(data["receipt_hash"]),
+            journal_entry_hash=str(data["journal_entry_hash"]),
         )
+
+    def body(self) -> Mapping[str, Any]:
+        """Return the body to be hashed and anchored."""
+        return {
+            "schema_version": self.schema_version,
+            "proposal_id": self.proposal_id,
+            "proposal_title": self.proposal_title,
+            "manifest_digest": self.manifest_digest,
+            "restored_files": self.restored_files,
+            "status": self.status,
+            "timestamp": self.timestamp,
+        }
+
+    def canonical_bytes(self) -> bytes:
+        """Return the body as UTF-8 JSON with sorted keys and minimal separators."""
+        return json.dumps(
+            self.body(),
+            ensure_ascii=False,
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("utf-8")
 
 
 def _hash_obj(obj: Any) -> str:
-    """SHA-256 hash of a JSON-serializable object, as ``sha256:<hex>``."""
-    json_bytes = json.dumps(obj, sort_keys=True, separators=(",", ":")).encode("utf-8")
-    return f"sha256:{hashlib.sha256(json_bytes).hexdigest()}"
+    """Compute SHA-256 over the canonical JSON of *obj*."""
+    if hasattr(obj, "canonical_bytes"):
+        digest = hashlib.sha256(obj.canonical_bytes()).hexdigest()
+    else:
+        digest = hashlib.sha256(
+            json.dumps(obj, ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode(
+                "utf-8"
+            )
+        ).hexdigest()
+    return f"sha256:{digest}"
 
 
 def build_rollback_receipt(
@@ -201,35 +226,33 @@ def build_rollback_receipt(
     receipt_hash = _hash_obj(body)
 
     spine = LineageSpine(lineage_root, run_id=EVOLUTION_ROLLBACK_RUN_ID, hmac_key=hmac_key)
-
-    # Now that we have the receipt hash, we can compute the journal entry hash.
-    body_with_hash = {
-        **body,
-        "receipt_hash": receipt_hash,
-    }
-    journal_entry_hash = _hash_obj(body_with_hash)
-
-    receipt = RollbackReceipt(
-        schema_version=ROLLBACK_RECEIPT_SCHEMA_VERSION,
-        restored_files=restored_files,
-        canonical_bytes=body_bytes,
-        journal_entry_hash=journal_entry_hash,
-        receipt_hash=receipt_hash,
+    artifact_path = "/".join((*_ROLLBACK_SUBPATH, f"{receipt_hash}.json"))
+    journal_entry_hash = spine.record(
+        artifact_path=artifact_path,
+        content=body_bytes,
+        actor=_ROLLBACK_ACTOR,
+        step_id=receipt_hash,
+        model="rollback",
+        timestamp=int(timestamp),
+        traceparent=None,
+        tracestate=None,
     )
 
-    # Write the receipt to disk.
-    write_rollback_receipt(workdir, receipt)
-
-    # Append the canonical bytes to the evolution-rollback spine and record in
-    # the HMAC audit chain.
-    spine.append(canonical_bytes)
-    # Note: The audit chain update is handled by the spine's append method.
-
-    return receipt
+    return RollbackReceipt(
+        schema_version=ROLLBACK_RECEIPT_SCHEMA_VERSION,
+        proposal_id=proposal_id,
+        proposal_title=proposal_title,
+        manifest_digest=manifest_digest,
+        restored_files=restored_files,
+        status=status,
+        timestamp=timestamp,
+        receipt_hash=receipt_hash,
+        journal_entry_hash=journal_entry_hash,
+    )
 
 
 def write_rollback_receipt(workdir: Path, receipt: RollbackReceipt) -> None:
-    """Write the receipt to disk atomically.
+    """Persist the rollback receipt to disk under the upgrades/rollback-receipts directory.
 
     The write is atomic: first written to a temporary file, then renamed to the final
     location. The file is named after the receipt's hash.
@@ -331,10 +354,10 @@ def verify_rollback_receipt(
     if not report.ok:
         detail = "; ".join(report.errors) if report.errors else report.status.value
         return RollbackVerifyResult(
-            ok=False,
-            reason=f"evolution-rollback spine failed verification: {detail}",
-            receipt=receipt
-        )
+                ok=False,
+                reason=f"evolution-rollback spine failed verification: {detail}",
+                receipt=receipt
+            )
 
     expected_content = content_hash_of(receipt.canonical_bytes())
     anchored = any(
@@ -342,11 +365,11 @@ def verify_rollback_receipt(
         for entry in spine.iter_entries()
     )
     if not anchored:
-        return RollbackVerifyResult(
-            ok=False,
-            reason="receipt is not anchored in the evolution-rollback spine",
-            receipt=receipt
-        )
+            return RollbackVerifyResult(
+                ok=False,
+                reason="receipt is not anchored in the evolution-rollback spine",
+                receipt=receipt
+            )
     return RollbackVerifyResult(ok=True, reason="", receipt=receipt)
 
 
@@ -359,5 +382,4 @@ __all__ = [
     "read_rollback_receipt",
     "rollback_receipt_path",
     "verify_rollback_receipt",
-    "write_rollback_receipt",
 ]

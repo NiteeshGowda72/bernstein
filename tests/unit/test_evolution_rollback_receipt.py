@@ -7,14 +7,11 @@ import time
 from pathlib import Path
 
 from bernstein.evolution.rollback_receipt import (
-    EVOLUTION_ROLLBACK_RUN_ID,
-    ROLLBACK_RECEIPT_SCHEMA_VERSION,
-    RollbackReceipt,
     build_rollback_receipt,
     read_rollback_receipt,
+    rollback_receipt_path,
     verify_rollback_receipt,
     write_rollback_receipt,
-    rollback_receipt_path,
 )
 
 
