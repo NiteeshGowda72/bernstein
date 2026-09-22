@@ -684,12 +684,14 @@ __all__ = [
     "SelectionReceipt",
     "SelectionReceiptError",
     "build_selection_receipt",
+    "canonical_receipt_bytes",
     "canonical_selection_receipt_bytes",
     "keyid_for",
     "load_or_create_signing_key",
     "read_receipt_file",
     "receipt_from_dict",
     "receipt_to_dict",
+    "sign_receipt",
     "sign_selection_receipt",
     "snapshot_digests",
     "verify_receipt",
@@ -698,3 +700,7 @@ __all__ = [
     "write_receipt",
 ]
 verify_receipt = verify_selection_receipt
+
+# Backward-compat aliases for old import paths
+canonical_receipt_bytes = canonical_selection_receipt_bytes
+sign_receipt = sign_selection_receipt

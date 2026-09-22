@@ -50,6 +50,7 @@ __all__ = [
     "load_receipt",
     "receipt_artefact_path",
     "receipts_dir",
+    "verify_receipt",
     "verify_transaction_receipt",
 ]
 
@@ -454,3 +455,7 @@ def verify_transaction_receipt(
         decision=receipt.decision,
         refusal_reason=receipt.refusal_reason,
     )
+
+
+# Backward-compat alias for old import path
+verify_receipt = verify_transaction_receipt
