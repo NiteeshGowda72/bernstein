@@ -541,6 +541,11 @@ def load_receipts(sdd_dir: Path) -> list[SLAViolationReceipt]:
     return out
 
 
+# Backward-compat aliases for callers still using the old names
+sign_receipt = sign_sla_receipt
+verify_receipt = verify_sla_receipt
+canonical_receipt_bytes = canonical_sla_receipt_bytes
+
 __all__ = [
     "SLA_RECEIPT_SCHEMA_VERSION",
     "IdentityTokens",
@@ -548,6 +553,7 @@ __all__ = [
     "SLAReceiptError",
     "SLAViolationReceipt",
     "build_receipt",
+    "canonical_receipt_bytes",
     "canonical_sla_receipt_bytes",
     "keyid_for",
     "load_receipts",
@@ -557,7 +563,9 @@ __all__ = [
     "receipt_from_dict",
     "receipt_path",
     "receipt_to_dict",
+    "sign_receipt",
     "sign_sla_receipt",
+    "verify_receipt",
     "verify_sla_receipt",
     "write_receipt",
 ]

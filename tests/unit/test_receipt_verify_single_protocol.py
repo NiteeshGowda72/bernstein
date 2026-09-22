@@ -49,21 +49,15 @@ PROTOCOL_MODULE = "core/receipts/protocol.py"
 #: slice 3). Delete an entry when its module stops defining the name; never
 #: add one.
 PENDING_VERIFY_RECEIPT = frozenset(
-    {
-        "core/orchestration/supervisor_receipt.py",
-    },
+    {},
 )
 
 PENDING_SIGN_RECEIPT = frozenset(
-    {
-        "core/orchestration/supervisor_receipt.py",
-    },
+    {},
 )
 
 PENDING_CANONICAL_RECEIPT_BYTES = frozenset(
-    {
-        "core/orchestration/supervisor_receipt.py",
-    },
+    {},
 )
 
 

@@ -486,6 +486,9 @@ def open_receipt(receipt_path: Path):  # type: ignore[no-untyped-def]
         yield tar
 
 
+# Backward-compat alias for callers still using the old name
+verify_receipt = verify_receipt_tarball
+
 __all__ = [
     "MANIFEST_NAME",
     "ExportResult",
@@ -495,5 +498,6 @@ __all__ = [
     "ReceiptVerificationResult",
     "export_receipt",
     "open_receipt",
+    "verify_receipt",
     "verify_receipt_tarball",
 ]
