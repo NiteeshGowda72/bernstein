@@ -692,9 +692,9 @@ __all__ = [
     "receipt_to_dict",
     "sign_selection_receipt",
     "snapshot_digests",
+    "verify_receipt",
     "verify_receipt_full",
     "verify_selection_receipt",
     "write_receipt",
-    "verify_receipt",
 ]
 verify_receipt = verify_selection_receipt
