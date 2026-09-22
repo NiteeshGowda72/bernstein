@@ -332,3 +332,4 @@ bernstein.core.volunteer.review_task: #4526 audit in flight
 bernstein.core.volunteer.submission: #4526 audit in flight
 bernstein.core.volunteer.verification_check_run: #4526 audit in flight
 bernstein.core.observability.schema_registry: #4526 audit in flight
+bernstein.core.observability.schema_registry: #4526 audit in flight
