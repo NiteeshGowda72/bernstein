@@ -28,8 +28,8 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from bernstein.core.lineage.spine import LineageSpine, content_hash_of
-from bernstein.core.verify_result import VerifyResult
 from bernstein.core.persistence.atomic_write import write_atomic_text
+from bernstein.core.verify_result import VerifyResult
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -222,7 +222,7 @@ def build_rollback_receipt(
 
     # Append the canonical bytes to the evolution-rollback spine and record in
     # the HMAC audit chain.
-    spine.append(canonical_bytes)
+    spine.append(receipt.canonical_bytes())
     # Note: The audit chain update is handled by the spine's append method.
 
     return receipt
