@@ -1,9 +1,8 @@
-goal: 'Implement tickets from .sdd/backlog/open/ by priority (p0 first, then p1, p2).
+goal: |
+  Implement tickets from .sdd/backlog/open/ by priority (p0 first, then p1, p2).
   Read each ticket file for requirements. Implement, write tests, run uv run ruff
   check src/ and uv run pytest tests/unit/RELEVANT_FILE.py -x -q. Commit each completed
   task. Do NOT invent new tickets or create tasks beyond what is in the backlog files.
-
-  '
 cli: claude
 max_agents: 2
 role_model_policy:
