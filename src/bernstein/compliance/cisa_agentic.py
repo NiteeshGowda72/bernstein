@@ -14,10 +14,7 @@ from typing import Any
 
 STANDARD_ID = "cisa-agentic"
 
-REGULATION = (
-    "CISA / Five Eyes, Careful Adoption of Agentic AI Services "
-    "(May 2026)"
-)
+REGULATION = "CISA / Five Eyes, Careful Adoption of Agentic AI Services (May 2026)"
 
 CONTROLS: list[dict[str, Any]] = [
     {
@@ -56,7 +53,6 @@ CONTROLS: list[dict[str, Any]] = [
         "event_type": "model.drift_observation",
         "status": "partial",
     },
-
     {
         "control_id": "CISA-05",
         "category": "privilege",
@@ -75,7 +71,6 @@ CONTROLS: list[dict[str, Any]] = [
         "event_type": "spiffe.svid_binding,identity.spawn_attestation",
         "status": "mapped",
     },
-
     {
         "control_id": "CISA-07",
         "category": "design_configuration",
@@ -112,7 +107,6 @@ CONTROLS: list[dict[str, Any]] = [
         "event_type": "mcp.capability_drift",
         "status": "partial",
     },
-
     {
         "control_id": "CISA-11",
         "category": "behaviour",
@@ -149,7 +143,6 @@ CONTROLS: list[dict[str, Any]] = [
         "event_type": "input.refusal_receipt",
         "status": "partial",
     },
-
     {
         "control_id": "CISA-15",
         "category": "structural",
@@ -204,7 +197,6 @@ CONTROLS: list[dict[str, Any]] = [
         "event_type": "a2a.message_receipt",
         "status": "partial",
     },
-
     {
         "control_id": "CISA-21",
         "category": "accountability",
