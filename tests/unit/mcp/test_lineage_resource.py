@@ -20,7 +20,7 @@ from contextlib import suppress
 from pathlib import Path
 
 import pytest
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer as FastMCP
 
 from bernstein.core.lineage.identity import AgentCard, generate_keypair
 from bernstein.core.lineage.signed_write import SignedLineageLog
